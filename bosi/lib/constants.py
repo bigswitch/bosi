@@ -21,12 +21,25 @@ T5 = 't5'
 MODE_DICT = {'pfabric': T5,
              'pvfabric': T6}
 
-OS_RELEASE_TO_BSN_LIB = {'kilo': '20151',
-                         'liberty': '20153'}
+OS_BCF_MAPPING_LOWER = {
+    'kilo': {
+        '3.6': '20151.36'
+    },
+    'liberty': {
+        '3.6': '20153.36',
+        '3.7': '20153.36',
+    }
+}
 
-#BCF release
-BCF_RELEASE_TO_BSN_LIB_LOWER = {'3.6': '36.0'}
-BCF_RELEASE_TO_BSN_LIB_UPPER = {'3.6': '37.0'}
+OS_BCF_MAPPING_UPPER = {
+    'kilo': {environ
+        '3.6': '20151.37'
+    },
+    'liberty': {
+        '3.6': '20153.37',
+        '3.7': '20153.38',
+    }
+}
 
 # Since kilo and BCF 3.5, we use tenant name
 # instead of tenant uuid to configure tenants,
