@@ -1639,11 +1639,14 @@ class Helper(object):
         # version string looks like this:
         # ivs 3.0.0 (2015-08-14.18:26-39a875b trusty-amd64)
         split_version = string.split(output, ' ')
+        # for ivs 4.0.0-beta1, the spec file contains 4.0.0~beta1
+        #  i.e. tilde ~ instead of hyphen -
+        expected_ivs_version = string.replace(node.ivs_version, '~', '-')
         # split_version[1] would be empty in error scenario
-        if node.ivs_version == split_version[1]:
+        if expected_ivs_version == split_version[1]:
             return ':-)'
         else:
-            return (':-( Expected ' + node.ivs_version +
+            return (':-( Expected ' + expected_ivs_version +
                     ' Actual ' + split_version[1])
 
     @staticmethod
