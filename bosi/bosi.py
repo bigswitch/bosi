@@ -301,7 +301,7 @@ def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
             Helper.chmod_node(node)
 
     with open(const.LOG_FILE, "a") as log_file:
-        version = Helper.run_command_on_local("pip show bosi")
+        version = "3.7.4"
         log_file.write(str(version))
         for hostname, node in node_dic.iteritems():
             log_file.write(str(node))
@@ -388,6 +388,8 @@ def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
 
 
 def main():
+    # copy etc files
+    subprocess.call(['sudo ./copyfiles.sh'], shell=True)
     # Parse configuration
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config-file", required=True,
