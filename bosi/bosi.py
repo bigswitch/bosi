@@ -216,11 +216,12 @@ def upgrade_bcf(node_dic):
 def deploy_bcf(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
                verify, verify_only, skip_ivs_version_check,
                certificate_dir, certificate_only, generate_csr,
-               support, upgrade_dir):
+               support, upgrade_dir, offline_dir):
     # Deploy setup node
     safe_print("Start to prepare setup node\n")
     env = Environment(config, mode, fuel_cluster_id, rhosp, tag, cleanup,
-                      skip_ivs_version_check, certificate_dir, upgrade_dir)
+                      skip_ivs_version_check, certificate_dir, upgrade_dir,
+                      offline_dir)
     Helper.common_setup_node_preparation(env)
     controller_nodes = []
 
@@ -432,6 +433,8 @@ def main():
                         help=("Collect openstack logs."))
     parser.add_argument('--upgrade-dir', required=False,
                         help=("The directory that has the packages for upgrade."))
+    parser.add_argument('--offline-dir', required=False,
+                        help=("The directory that has the packages for offline installation."))
 
 
     args = parser.parse_args()
@@ -441,6 +444,10 @@ def main():
     if args.rhosp and not args.upgrade_dir:
         safe_print("BOSI for RHOSP only supports upgrading packages.\n"
                    "Please specify --upgrade-dir.\n")
+        return
+    if args.offline_dir and args.upgrade_dir:
+        safe_print("Cannot have both --offline-dir and --upgrade-dir. Please specify one.")
+        return
     if args.certificate_only and (not args.certificate_dir):
         safe_print("--certificate-only requires the existence of --certificate-dir.\n")
         return
@@ -453,7 +460,7 @@ def main():
                args.skip_ivs_version_check,
                args.certificate_dir, args.certificate_only,
                args.generate_csr, args.support,
-               args.upgrade_dir)
+               args.upgrade_dir, args.offline_dir)
 
 
 if __name__ == '__main__':

@@ -117,7 +117,17 @@ if [[ $install_bsnstacklib == true ]]; then
     sleep 2
     pip uninstall -y bsnstacklib
     sleep 2
-    if [[ $pip_proxy == false ]]; then
+
+    offline_dir=%(dst_dir)s/offline
+    if [[ -d $offline_dir ]]; then
+        # install from offline package dir if available
+        PKGS=$offline_dir/*
+        for pkg in $PKGS
+        do
+            pip install --upgrade $pkg
+        done
+    # else online
+    elif [[ $pip_proxy == false ]]; then
         pip install --upgrade "bsnstacklib>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
         pip install --upgrade "horizon-bsn>=%(bsnstacklib_version_lower)s,<%(bsnstacklib_version_upper)s"
     else

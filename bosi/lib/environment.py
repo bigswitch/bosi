@@ -11,13 +11,20 @@ from rest import RestLib
 class Environment(object):
     def __init__(self, config, mode, fuel_cluster_id, rhosp, tag,
                  cleanup, skip_ivs_version_check, certificate_dir,
-                 upgrade_dir):
+                 upgrade_dir, offline_dir):
         # directory for upgrade
         self.upgrade_dir = None
         self.upgrade_pkgs = []
         if upgrade_dir:
             self.upgrade_dir = upgrade_dir
             self.upgrade_pkgs = [f for f in listdir(upgrade_dir) if isfile(join(upgrade_dir, f))]
+
+        # directory for offline installation
+        self.offline_dir = None
+        self.offline_pkgs = []
+        if offline_dir:
+            self.offline_dir = offline_dir
+            self.offline_pkgs = [f for f in listdir(offline_dir) if isfile(join(offline_dir, f))]
 
         # certificate directory
         self.certificate_dir = certificate_dir

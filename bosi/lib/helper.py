@@ -10,8 +10,28 @@ import yaml
 from bridge import Bridge
 from membership_rule import MembershipRule
 from node import Node
+from os import listdir
+from os.path import isfile
+from os.path import join
 from rest import RestLib
 from util import safe_print
+
+
+def has_min_req_packages(dir_path):
+    """ Check the directory for openstack plugins bsnstacklib and horizon-bsn
+
+    :rtype boolean
+    """
+    req_packages = ['bsnstacklib', 'horizon-bsn']
+    all_packages = []
+    for file in listdir(dir_path):
+        if isfile(join(dir_path, file)):
+            all_packages.append(file)
+    for req_pkg in req_packages:
+        if not any(req_pkg in pkg for pkg in all_packages):
+            return False
+    return True
+
 
 class Helper(object):
 
@@ -627,7 +647,8 @@ class Helper(object):
                  'uplinks': node.get_all_uplinks(),
                  'bond': node.bond,
                  'br_bond': node.br_bond,
-                 'skip_ivs_version_check': str(node.skip_ivs_version_check).lower()})
+                 'skip_ivs_version_check': str(node.skip_ivs_version_check).lower(),
+                 })
         bash_script_path = (
             r'''%(setup_node_dir)s/%(generated_script_dir)s/%(hostname)s.sh'''
             % {'setup_node_dir': node.setup_node_dir,
@@ -1306,6 +1327,14 @@ class Helper(object):
             # don't need other preparation for upgrade
             return
 
+        # if installation is offline, check that required packages are
+        # available
+        if env.offline_dir:
+            if not has_min_req_packages(env.offline_dir):
+                safe_print("Either bsnstacklib or horizon-bsn is missing in "
+                           "the offline_dir. Please check again and retry.")
+                exit(1)
+
         # wget ivs packages
         if env.deploy_mode == const.T6:
             code_web = 1
@@ -1587,6 +1616,22 @@ class Helper(object):
                      'pkg': pkg}),
                      dst_dir, pkg)
             return
+
+        if node.offline_dir:
+            dst_dir = "%s/offline" % node.dst_dir
+            clear_dir_cmd = (r'''rm -rf %(dst_dir)s/*''' % {'dst_dir': dst_dir})
+            Helper.run_command_on_remote_without_timeout(node, clear_dir_cmd)
+            for pkg in node.offline_pkgs:
+                if (node.role != const.ROLE_COMPUTE) and ("ivs" in pkg):
+                    continue
+                safe_print("Copy %(pkg)s to %(hostname)s\n" %
+                          {'pkg': pkg, 'hostname': node.fqdn})
+                Helper.copy_file_to_remote(
+                    node,
+                    (r'''%(src_dir)s/%(pkg)s''' %
+                    {'src_dir': node.offline_dir,
+                     'pkg': pkg}),
+                     dst_dir, pkg)
 
         # copy neutron, metadata, dhcp config to node
         is_t5 = False
