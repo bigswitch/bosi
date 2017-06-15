@@ -27,15 +27,15 @@ tar -zcvf bosi_offline_packages_$CURR_VERSION.tar.gz bosi_offline
 twine upload dist/* -r pypi -s -i "Big Switch Networks" || true
 # delay of 5 seconds
 sleep 5
-sudo -H pip install --upgrade bosi==$CURR_VERSION
-if [ "$?" -eq "0" ]
-then
-  echo "PYPI upload successful."
-else
-  echo "PYPI upload FAILED. Check the logs."
-fi
-# remove the package
-sudo -H pip uninstall -y bosi
+#sudo -H pip install --upgrade bosi==$CURR_VERSION
+#if [ "$?" -eq "0" ]
+#then
+#  echo "PYPI upload successful."
+#else
+#  echo "PYPI upload FAILED. Check the logs."
+#fi
+## remove the package
+#sudo -H pip uninstall -y bosi
 
 # $GIT_BRANCH is set by jenkins
 # possible values are origin/master, origin/bcf-3.7.0, origin/bcf-4.0.0 and so on..
