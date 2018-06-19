@@ -157,30 +157,30 @@ class Node(object):
                             phy['bond_mode'].upper()]
 
         # setup DPDK custom_physnets
-        if self.role in const.DPDK_ROLES:
-            if (not 'physnets' in node_config
-                or len(node_config['physnets']) != 1):
-                self.skip = True
-                self.error = (r'''physnets not specified or more than one '''
-                              '''specified for DPDK node %(hostname)s'''
-                              % {'hostname': self.hostname})
-            if not self.skip:
-                for phy in node_config['physnets']:
-                    if ('phy_name' not in phy
-                        or 'uplink_interfaces' not in phy
-                        or len(phy['uplink_interfaces']) > 2):
-                        self.skip = True
-                        self.error = (r'''Either missing phy_name or '''
-                                      '''uplink_interfaces or more than 2 '''
-                                      '''uplink_interfaces found for SRIOV '''
-                                      '''node %(hostname)s''' %
-                                      {'hostname': self.hostname})
-                        break
-                    self.custom_physnets[phy['phy_name']] = \
-                        phy['uplink_interfaces']
-                    if 'bond_mode' in phy:
-                        self.bond_mode = const.BondMode[
-                            phy['bond_mode'].upper()]
+        # if self.role in const.DPDK_ROLES:
+        #     if (not 'physnets' in node_config
+        #         or len(node_config['physnets']) != 1):
+        #         self.skip = True
+        #         self.error = (r'''physnets not specified or more than one '''
+        #                       '''specified for DPDK node %(hostname)s'''
+        #                       % {'hostname': self.hostname})
+        #     if not self.skip:
+        #         for phy in node_config['physnets']:
+        #             if ('phy_name' not in phy
+        #                 or 'uplink_interfaces' not in phy
+        #                 or len(phy['uplink_interfaces']) > 2):
+        #                 self.skip = True
+        #                 self.error = (r'''Either missing phy_name or '''
+        #                               '''uplink_interfaces or more than 2 '''
+        #                               '''uplink_interfaces found for SRIOV '''
+        #                               '''node %(hostname)s''' %
+        #                               {'hostname': self.hostname})
+        #                 break
+        #             self.custom_physnets[phy['phy_name']] = \
+        #                 phy['uplink_interfaces']
+        #             if 'bond_mode' in phy:
+        #                 self.bond_mode = const.BondMode[
+        #                     phy['bond_mode'].upper()]
 
         # in case of config env (packstack), bond and br_bond
         # may be empty
