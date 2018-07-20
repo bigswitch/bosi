@@ -125,6 +125,7 @@ class Node(object):
         self.old_ivs_version = node_config.get('old_ivs_version')
         self.bond_mode = env.bond_mode
         self.custom_physnets = {}
+        self.dpdk_phy_name = env.dpdk_phy_name
 
         # setup SRIOV custom_physnets
         if self.role == const.ROLE_SRIOV:
@@ -155,32 +156,6 @@ class Node(object):
                     if 'bond_mode' in phy:
                         self.bond_mode = const.BondMode[
                             phy['bond_mode'].upper()]
-
-        # setup DPDK custom_physnets
-        # if self.role in const.DPDK_ROLES:
-        #     if (not 'physnets' in node_config
-        #         or len(node_config['physnets']) != 1):
-        #         self.skip = True
-        #         self.error = (r'''physnets not specified or more than one '''
-        #                       '''specified for DPDK node %(hostname)s'''
-        #                       % {'hostname': self.hostname})
-        #     if not self.skip:
-        #         for phy in node_config['physnets']:
-        #             if ('phy_name' not in phy
-        #                 or 'uplink_interfaces' not in phy
-        #                 or len(phy['uplink_interfaces']) > 2):
-        #                 self.skip = True
-        #                 self.error = (r'''Either missing phy_name or '''
-        #                               '''uplink_interfaces or more than 2 '''
-        #                               '''uplink_interfaces found for SRIOV '''
-        #                               '''node %(hostname)s''' %
-        #                               {'hostname': self.hostname})
-        #                 break
-        #             self.custom_physnets[phy['phy_name']] = \
-        #                 phy['uplink_interfaces']
-        #             if 'bond_mode' in phy:
-        #                 self.bond_mode = const.BondMode[
-        #                     phy['bond_mode'].upper()]
 
         # in case of config env (packstack), bond and br_bond
         # may be empty
@@ -513,6 +488,7 @@ class Node(object):
             error: %(error)s,
             custom_physnets: %(custom_physnets)s,
             bond_mode: %(bond_mode)s,
+            dpdk_phy_name: %(dpdk_phy_name)s,
             ''' %
             {'dst_dir': self.dst_dir,
              'bash_script_path': self.bash_script_path,
@@ -599,7 +575,8 @@ class Node(object):
             'old_ivs_version': self.old_ivs_version,
             'error': self.error,
             'custom_physnets': self.custom_physnets,
-            'bond_mode': self.bond_mode})
+            'bond_mode': self.bond_mode,
+            'dpdk_phy_name': self.dpdk_phy_name})
 
     def __repr__(self):
         return self.__str__()

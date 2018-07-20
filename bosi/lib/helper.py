@@ -433,7 +433,7 @@ class Helper(object):
 
             bash = bash_template_content.format(**{
                 'is_controller': str(is_controller).lower(),
-                'phy1_name': node.get_custom_phy1_name(),
+                'dpdk_phy_name': node.dpdk_phy_name,
                 'system_desc': node.bond_mode.value,
             })
         bash_script_path = (
