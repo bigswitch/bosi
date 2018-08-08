@@ -15,24 +15,20 @@
 #    under the License.
 
 # env variables to be supplied by BOSI
-fqdn={fqdn}
 is_controller={is_controller}
-phy1_name={phy1_name}
-phy1_nics={phy1_nics}
+dpdk_phy_name={dpdk_phy_name}
 system_desc={system_desc}
 
 # constants for this job
-SERVICE_FILE_1='/usr/lib/systemd/system/send_lldp.service'
-SERVICE_FILE_MULTI_USER_1='/etc/systemd/system/multi-user.target.wants/send_lldp.service'
+SERVICE_FILE_DEFAULT='/usr/lib/systemd/system/neutron-bsn-lldp.service'
+SERVICE_FILE_DPDK='/usr/lib/systemd/system/neutron-bsn-lldp-dpdk.service'
 
 # new vars with evaluated results
 HOSTNAME=`hostname -f`
 
 # system name for LLDP depends on whether its a controller or compute node
-SYSTEMNAME=${{HOSTNAME}}-${{phy1_name}}
-if [[ $is_controller == true ]]; then
-    SYSTEMNAME=${{HOSTNAME}}
-fi
+SYSTEMNAME_LINUX_BOND=$HOSTNAME-api
+SYSTEMNAME_DPDK_BRIDGE=$HOSTNAME-$dpdk_phy_name
 
 # Make sure only root can run this script
 if [ "$(id -u)" != "0" ]; then
@@ -41,39 +37,76 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 # if service file exists, stop and disable the service. else, return true
-systemctl stop send_lldp | true
-systemctl disable send_lldp | true
+systemctl stop neutron-bsn-lldp | true
+systemctl disable neutron-bsn-lldp | true
 
-# rewrite service file
+systemctl stop neutron-bsn-lldp-dpdk | true
+systemctl disable neutron-bsn-lldp-dpdk | true
+
+# rewrite service file for linux_bond
 echo "
 [Unit]
-Description=BSN send_lldp for DPDK physnet
-After=syslog.target network.target
+Description=bsn lldp
+Wants=network-online.target
+After=syslog.target network.target network-online.target
 
 [Service]
 Type=simple
-ExecStart=/bin/python /usr/lib/python2.7/site-packages/networking_bigswitch/bsnlldp/send_lldp.py \
-    --system-desc ${{system_desc}} \
-    --system-name ${{SYSTEMNAME}} \
-    -i 10 \
-    --network_interface ${{phy1_nics}} \
-    --sriov
+ExecStart=/usr/bin/bsnlldp --system-name $SYSTEMNAME_LINUX_BOND
 Restart=always
 StartLimitInterval=60s
 StartLimitBurst=3
-
 [Install]
 WantedBy=multi-user.target
-" > $SERVICE_FILE_1
 
-# symlink multi user file
-ln -sf $SERVICE_FILE_1 $SERVICE_FILE_MULTI_USER_1
+" > $SERVICE_FILE_DEFAULT
+
+# rewrite service file for DPDK bridge
+if [[ $is_controller == true ]]; then
+    echo "
+[Unit]
+Description=bsn lldp dpdk
+Wants=network-online.target
+After=syslog.target network.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bsnlldp --system-name $SYSTEMNAME_DPDK_BRIDGE --system-desc $system_desc --dpdk-ctrl-bridge
+Restart=always
+StartLimitInterval=60s
+StartLimitBurst=3
+[Install]
+WantedBy=multi-user.target
+
+" > $SERVICE_FILE_DPDK
+else
+    echo "
+[Unit]
+Description=bsn lldp
+Wants=network-online.target
+After=syslog.target network.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bsnlldp --system-name $SYSTEMNAME_DPDK_BRIDGE --system-desc $system_desc --dpdk-cmpt-bridge
+Restart=always
+StartLimitInterval=60s
+StartLimitBurst=3
+[Install]
+WantedBy=multi-user.target
+
+" > $SERVICE_FILE_DPDK
+fi
 
 # reload service files
 systemctl daemon-reload
 
-# start services as required
-systemctl enable send_lldp
-systemctl start send_lldp
+# start lldp script for linux_bond
+systemctl enable neutron-bsn-lldp
+systemctl start neutron-bsn-lldp
+
+systemctl enable neutron-bsn-lldp-dpdk
+systemctl start neutron-bsn-lldp-dpdk
+
 
 echo "Finished updating with DPDK LLDP scripts."

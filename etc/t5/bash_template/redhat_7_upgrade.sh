@@ -22,6 +22,7 @@ controller() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"python-networking-bigswitch"* ]]; then
+            yum remove -y python-networking-bigswitch
             rpm -ivhU $pkg --force
             systemctl daemon-reload
             neutron-db-manage upgrade heads
@@ -34,6 +35,7 @@ controller() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"openstack-neutron-bigswitch-lldp"* ]]; then
+            yum remove -y openstack-neutron-bigswitch-lldp
             rpm -ivhU $pkg --force
             systemctl daemon-reload
             systemctl enable  neutron-bsn-lldp
@@ -45,6 +47,7 @@ controller() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"openstack-neutron-bigswitch-agent"* ]]; then
+            yum remove -y openstack-neutron-bigswitch-agent
             rpm -ivhU $pkg --force
             systemctl stop neutron-bsn-agent
             systemctl disable neutron-bsn-agent
@@ -55,6 +58,7 @@ controller() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"python-horizon-bsn"* ]]; then
+            yum remove -y python-horizon-bsn
             rpm -ivhU $pkg --force
             systemctl restart httpd
             break
@@ -69,6 +73,7 @@ compute() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"python-networking-bigswitch"* ]]; then
+            yum remove -y python-networking-bigswitch
             rpm -ivhU $pkg --force
             break
         fi
@@ -77,6 +82,7 @@ compute() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"openstack-neutron-bigswitch-agent"* ]]; then
+            yum remove -y openstack-neutron-bigswitch-agent
             rpm -ivhU $pkg --force
             systemctl daemon-reload
             systemctl stop neutron-bsn-agent
@@ -88,6 +94,7 @@ compute() {
     for pkg in $PKGS
     do
         if [[ $pkg == *"openstack-neutron-bigswitch-lldp"* ]]; then
+            yum remove -y openstack-neutron-bigswitch-lldp
             rpm -ivhU $pkg --force
             systemctl daemon-reload
             systemctl enable neutron-bsn-lldp

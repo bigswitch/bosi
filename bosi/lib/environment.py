@@ -21,6 +21,7 @@ from os.path import isfile
 from os.path import join
 import re
 from rest import RestLib
+import yaml
 
 
 class Environment(object):
@@ -46,6 +47,15 @@ class Environment(object):
 
         # dpdk for rhosp p-only
         self.dpdk = dpdk
+        self.dpdk_phy_name = None
+        if self.dpdk:
+            # read network-environment.yaml and get dpdk_phy_name
+            net_env_file = (
+                open('/home/stack/templates/network-environment.yaml', 'r'))
+            net_env_config = yaml.load(net_env_file)
+            bridge_mappings = (
+                net_env_config['parameter_defaults']['NeutronBridgeMappings'])
+            self.dpdk_phy_name = bridge_mappings.split(':')[0]
 
         # certificate directory
         self.certificate_dir = certificate_dir

@@ -432,10 +432,8 @@ class Helper(object):
                 is_controller = True
 
             bash = bash_template_content.format(**{
-                'fqdn': node.fqdn,
                 'is_controller': str(is_controller).lower(),
-                'phy1_name': node.get_custom_phy1_name(),
-                'phy1_nics': node.get_custom_phy1_nics(),
+                'dpdk_phy_name': node.dpdk_phy_name,
                 'system_desc': node.bond_mode.value,
             })
         bash_script_path = (
@@ -933,19 +931,17 @@ class Helper(object):
         else:
             return None
         node_config['hostname'] = hostname
-        # In case of RHOSP, SRIOV & DPDK nodes need to be explicitly specified
-        if node_config['role']:
-            if node_config['role'] == const.ROLE_DPDK:
-                # For DPDK nodes, consider their original roles and assign a
-                # specific DPDK subrole based on that.
-                if role == const.ROLE_COMPUTE:
-                    node_config['role'] = const.ROLE_DPDK_COMPUTE
-                elif role == const.ROLE_NEUTRON_SERVER:
-                    node_config['role'] = const.ROLE_DPDK_CONTROL
-            elif node_config['role'] == const.ROLE_SRIOV:
-                node_config['role'] = const.ROLE_SRIOV
-            else:
-                node_config['role'] = role
+        # In case of RHOSP, SRIOV nodes need to be explicitly specified
+        node_config['role'] = (const.ROLE_SRIOV
+                               if node_config['role'] == const.ROLE_SRIOV
+                               else role)
+        # In case of RHOSP, DPDK deployments, env variable 'dpdk' dictates role
+        if env.dpdk:
+            node_config['role'] = const.ROLE_DPDK
+            if role == const.ROLE_COMPUTE:
+                node_config['role'] = const.ROLE_DPDK_COMPUTE
+            if role == const.ROLE_NEUTRON_SERVER:
+                node_config['role'] = const.ROLE_DPDK_CONTROL
 
         node = Node(node_config, env)
         if node.skip:
