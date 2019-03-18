@@ -14,6 +14,7 @@ parameter_defaults:
     neutron::agents::dhcp::enable_metadata_network: false
     neutron::server::l3_ha: false
   NeutronMechanismDrivers: openvswitch,bsn_ml2,sriovnicswitch
+  NeutronFirewallDriver: iptables_hybrid
   NeutronServicePlugins: bsn_l3,bsn_service_plugin
   KeystoneNotificationDriver: messaging
 

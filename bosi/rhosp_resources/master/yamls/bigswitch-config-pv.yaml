@@ -11,6 +11,7 @@ parameter_defaults:
   ControllerExtraConfig:
     neutron::agents::bigswitch::lldp_enabled: true
   NeutronMechanismDrivers: openvswitch,bsn_ml2
+  NeutronFirewallDriver: iptables_hybrid
   NeutronServicePlugins: bsn_l3,bsn_service_plugin,qos,trunk
   KeystoneNotificationDriver: messaging
 
