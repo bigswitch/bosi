@@ -13,4 +13,7 @@ rm -rf $CERTS_DIR/var/lib/neutron/host_certs/*.pem
 rm -rf $CERTS_DIR/var/lib/neutron/ca_certs/*.pem
 rm -rf $CERTS_DIR/var/lib/neutron/combined/*.pem
 
-docker restart neutron_api
+docker stop neutron_api
+echo "stopped neutron_api container. sleep for 10 secs before starting again.."
+sleep 10
+docker start neutron_api
