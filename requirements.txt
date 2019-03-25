@@ -4,7 +4,6 @@
 pbr>=0.11,<2.0
 subprocess32>=3.2.6,<3.2.9
 futures>=3.0.2,<3.0.5
-# pyyaml security vulnerability fix not available in GA as of now
-# hence using beta candidate
-pyyaml==4.2b4
+# update pyyaml requirement to match newton env
+pyyaml>=3.1.0,<4.3
 netaddr>=0.7.18,<0.8
