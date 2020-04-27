@@ -40,8 +40,8 @@ tar -zcvf bosi_offline_packages_$CURR_VERSION.tar.gz bosi_offline
 
 # force success. but always check if pip install fails
 twine upload dist/* -r pypi -s -i "Big Switch Networks" || true
-# delay of 5 seconds
-sleep 5
+# delay of 30 seconds
+sleep 30
 pip install --upgrade bosi==$CURR_VERSION
 if [ "$?" -eq "0" ]
 then
