@@ -1,0 +1,19 @@
+This directory contains the rpm packages of Arista Converged
+Cloud Fabric Openstack plugin, rpm and a few helper scripts.
+
+RHOSP and CCF have different release schedules.
+As a result, the Arista Converged Cloud Fabric openstack plugins
+in RHOSP overcloud image may not always be compatible
+with a particular CCF release. The rpm packages in this
+directory is verified to work with CCF 6.0 on RHOSP16.0 and RHOSP16.1
+Please refer to CCF deployment guide for the installation steps
+
+neutron-arista-ccf-lldp-${lldp_version}-1.el8.centos.noarch.rpm
+The Arista CCF LLDP service
+
+customize.sh
+is the script to customize overcloud ISO image, adding LLDP service and selinux
+rules to overcloud nodes
+
+python-arista-ccf-neutronclient-${client_version}-1.el8.centos.noarch.rpm
+The CLI for triggering topology sync for network configuration.

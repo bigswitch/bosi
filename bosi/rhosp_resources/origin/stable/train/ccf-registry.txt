@@ -1,0 +1,23 @@
+In order to use CCF OpenStack Neutron plugin, please do following changes to
+overcloud-containers-prepare-parameter.yaml
+
+1. add neutron-server-ovn to the first section
+
+  excludes:
+  - nova-api
+
+2. add CCF rhosp16-0-openstack-neutron-server-arista-ccf
+or rhosp16-1-openstack-neutron-server-arista-ccf image
+based on OpenStack Platform version.
+
+- push_destination: true
+  includes:
+  - rhosp16-<0-or-1>-openstack-neutron-server-arista-ccf
+  set:
+    namespace: registry.connect.redhat.com/bigswitch
+    tag: latest
+
+3. add login credential for registry.connect.redhat.com
+
+    registry.connect.redhat.com:
+      <redhat-acccount>: <redhat-password>

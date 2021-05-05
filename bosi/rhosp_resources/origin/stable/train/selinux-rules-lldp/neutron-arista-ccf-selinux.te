@@ -1,0 +1,17 @@
+
+module selinux-rules 1.0;
+
+require {
+	type unlabeled_t;
+	type chronyd_t;
+	type cloud_init_t;
+	type init_t;
+	class unix_dgram_socket sendto;
+	class lnk_file { getattr read };
+}
+
+#============= chronyd_t ==============
+allow chronyd_t cloud_init_t:unix_dgram_socket sendto;
+
+#============= init_t ==============
+allow init_t unlabeled_t:lnk_file { getattr read };
