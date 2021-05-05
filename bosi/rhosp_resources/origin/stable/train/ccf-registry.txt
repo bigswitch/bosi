@@ -1,23 +1,75 @@
 In order to use CCF OpenStack Neutron plugin, please do following changes to
 overcloud-containers-prepare-parameter.yaml
 
-1. add neutron-server-ovn to the first section
+1. add neutron-server to the first section
 
   excludes:
-  - nova-api
+  - neutron-server
 
-2. add CCF rhosp16-0-openstack-neutron-server-arista-ccf
-or rhosp16-1-openstack-neutron-server-arista-ccf image
+2. add CCF rhosp16-openstack-neutron-server-arista-ccf image
 based on OpenStack Platform version.
 
 - push_destination: true
   includes:
-  - rhosp16-<0-or-1>-openstack-neutron-server-arista-ccf
+  - neutron-server
   set:
-    namespace: registry.connect.redhat.com/bigswitch
+    name_prefix: rhosp16-openstack-
+    name_suffix: -arista-ccf
+    namespace: registry.connect.redhat.com/arista
     tag: latest
 
 3. add login credential for registry.connect.redhat.com
 
     registry.connect.redhat.com:
       <redhat-acccount>: <redhat-password>
+
+
+Following is a sample of the overcloud-containers-prepare-parameter.yaml:
+
+#   openstack tripleo container image prepare default --local-push-destination --output-env-file overcloud-container-parameter.yaml
+#
+
+parameter_defaults:
+  ContainerImagePrepare:
+  - push_destination: true
+    excludes:
+      - neutron-server
+    set:
+      ceph_alertmanager_image: ose-prometheus-alertmanager
+      ceph_alertmanager_namespace: registry.redhat.io/openshift4
+      ceph_alertmanager_tag: 4.1
+      ceph_grafana_image: rhceph-4-dashboard-rhel8
+      ceph_grafana_namespace: registry.redhat.io/rhceph
+      ceph_grafana_tag: 4
+      ceph_image: rhceph-4-rhel8
+      ceph_namespace: registry.redhat.io/rhceph
+      ceph_node_exporter_image: ose-prometheus-node-exporter
+      ceph_node_exporter_namespace: registry.redhat.io/openshift4
+      ceph_node_exporter_tag: v4.1
+      ceph_prometheus_image: ose-prometheus
+      ceph_prometheus_namespace: registry.redhat.io/openshift4
+      ceph_prometheus_tag: 4.1
+      ceph_tag: latest
+      name_prefix: openstack-
+      name_suffix: ''
+      #neutron_driver: null
+      namespace: registry.redhat.io/rhosp-rhel8
+      rhel_containers: false
+      tag: '16.1'
+    tag_from_label: '{version}-{release}'
+
+  - push_destination: true
+    includes:
+    - neutron-server
+    set:
+      name_prefix: rhosp16-openstack-
+      name_suffix: -arista-ccf
+      namespace: registry.connect.redhat.com/arista
+      tag: 'latest'
+
+  ContainerImageRegistryCredentials:
+    registry.redhat.io:
+      rh-account: password
+
+    registry.connect.redhat.com:
+      rh-account: password
