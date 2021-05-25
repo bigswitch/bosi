@@ -19,7 +19,7 @@ export LIBGUESTFS_BACKEND=direct
 image_dir="/home/stack/images"
 
 
-virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload neutron-arista-ccf-lldp-${lldp_version}-1.el8.centos.noarch.rpm:/root/
+virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload neutron-arista-ccf-lldp-${lldp_version}-1.el8.noarch.rpm:/root/
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --upload selinux-rules-lldp/neutron-arista-ccf-selinux.pp:/root/
 
 virt-customize -a ${image_dir}/overcloud-full.qcow2 --install /root/neutron-arista-ccf-lldp-${lldp_version}-1.el8.noarch.rpm
